@@ -1,0 +1,10 @@
+fastapi
+aiogram
+sqlmodel
+uvicorn
+python-dotenv
+pwdlib["argon2"]
+pyjwt
+pydantic-settings
+google-genai
+cryptography
