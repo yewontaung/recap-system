@@ -30,12 +30,22 @@ async def _generate_recap_via_telegram(video_path:str, user_id:str, session:Sess
 
 
 async def analyze_video(video_path:str, api_key:str):
+
+    path = Path(video_path).resolve()
+    if not path.is_file():
+        raise FileNotFoundError(f"Video file not found: {path}")
+
     client = genai.Client(api_key=api_key)
-    video_file = await asyncio.to_thread(client.files.upload, file=str(video_path))
+
     try:
-        while not video_file.state or video_file.state.name != "ACTIVE":
-            if video_file.state and video_file.state.name == "FAILED":
+        video_file = await asyncio.to_thread(client.files.upload, file=str(path))
+        while True:
+            state = video_file.state
+            if state and state.name == "ACTIVE":
+                break
+            if state and state.name == "FAILED":
                 raise RuntimeError("Gemini failed to process the video.")
+
             await asyncio.sleep(5)
 
             video_file = await asyncio.to_thread(client.files.get, name=video_file.name)
@@ -66,5 +76,3 @@ async def analyze_video(video_path:str, api_key:str):
 
     finally:
         pass
-
-    return
