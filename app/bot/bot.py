@@ -1,3 +1,5 @@
+import tempfile
+
 from aiogram import F, Router
 from aiogram.filters import CommandStart
 from aiogram.types import FSInputFile, Message
@@ -65,9 +67,10 @@ async def handle_video(message:Message):
 
     try:
         with get_session() as session:
-            uploaded_path = await video_service.upload_via_telegram(video, message)
-            result = await recap_service.generate_recap(uploaded_path, str(message.from_user.id), ClientType.TELEGRAM, session)
-            await message.answer_document(FSInputFile(result, filename="recap.srt"))
-            
+            with tempfile.TemporaryDirectory() as temp_dir:
+                uploaded_path = await video_service.upload_via_telegram(video, temp_dir, message)
+                result = await recap_service.generate_recap(uploaded_path, str(message.from_user.id), ClientType.TELEGRAM, session)
+                await message.answer_document(FSInputFile(result, filename="recap.srt"))
+                
     except Exception as e:
         await message.answer(str(e))
