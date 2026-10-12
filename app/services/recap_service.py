@@ -31,7 +31,7 @@ async def _generate_recap_via_telegram(video_path:str, user_id:str, session:Sess
 
 async def analyze_video(video_path:str, api_key:str):
     client = genai.Client(api_key=api_key)
-    video_file = await asyncio.to_thread(client.files.upload(file=video_path))
+    video_file = await asyncio.to_thread(client.files.upload, file=video_path)
     try:
         while not video_file.state or video_file.state.name != "ACTIVE":
             if video_file.state and video_file.state.name == "FAILED":
