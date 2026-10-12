@@ -11,7 +11,7 @@ from app.utils.enums import ClientType
 
 async def generate_recap(video_path:str, user_id:str, client:ClientType, session:Session):
     match client:
-        case ClientType.TELEGRAM: return _generate_recap_via_telegram(video_path, user_id, session)
+        case ClientType.TELEGRAM: return await _generate_recap_via_telegram(video_path, user_id, session)
     return
 
 async def _generate_recap_via_telegram(video_path:str, user_id:str, session:Session):
@@ -26,7 +26,7 @@ async def _generate_recap_via_telegram(video_path:str, user_id:str, session:Sess
     if not api_key:
         raise ValueError(f"API not found.")
 
-    return analyze_video(video_path, api_key.hashed_key)
+    return await analyze_video(video_path, api_key.hashed_key)
 
 
 async def analyze_video(video_path:str, api_key:str):
