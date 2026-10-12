@@ -5,6 +5,7 @@ import re
 from google import genai
 from sqlmodel import Session, select
 
+from app.configs.settings import SETTINGS
 from app.database.models import AIApiKey, Account
 from app.utils.enums import ClientType
 
@@ -51,7 +52,7 @@ async def analyze_video(video_path:str, api_key:str):
             video_file = await asyncio.to_thread(client.files.get, name=video_file.name)
             response = await asyncio.to_thread(
                 client.models.generate_content,
-                model="gemini-2.5-flash",
+                model=SETTINGS.model_name,
                 contents=[
                     video_file,
                     """
